@@ -32,7 +32,7 @@ A[5] = 6; B[5] = 3;
 
 A[6] = 7; B[6] = 5;
 
-image
+![image](https://github.com/irissmart/jane-ihanacho/assets/142328274/271eb0c3-4661-4ab9-a0c9-341d8b0f73f3)
 
 the function should return "18" since the Elves can destroy bridges 1−3 and 3−5 (marked as dashed lines in the image above). The created areas consist of 3, 3 and 2 guard posts.
 
