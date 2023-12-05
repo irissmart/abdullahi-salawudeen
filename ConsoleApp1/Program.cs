@@ -1,45 +1,107 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace ConsoleApp1
+class Solution
 {
-    class Program
+    public string solution(int[] A, int[] B)
     {
-        static void Main(string[] args)
+        int N = A.Length + 1;
+
+        // Create an adjacency list to represent the tree
+        List<int>[] tree = new List<int>[N];
+        for (int i = 0; i < N; i++)
         {
-            Console.WriteLine("Hello World!");
+            tree[i] = new List<int>();
         }
 
-        public string EvadingSolution(int[] A, int[] B, int[] K)
+        // Populate the adjacency list
+        for (int i = 0; i < A.Length; i++)
         {
+            tree[A[i]].Add(B[i]);
+            tree[B[i]].Add(A[i]);
+        }
 
-            string response = string.Empty;
-            int returnValue = 1;
+        int[] dist = new int[N];
+        int[] maxDistNode = new int[2];
 
-            int lengthOfB = B.Length;
-            foreach(var item in K)
+        // First BFS to find the farthest node from any starting node
+        BFS(tree, 0, dist, maxDistNode);
+
+        int[] dist2 = new int[N];
+
+        // Second BFS starting from the farthest node found in the first BFS
+        BFS(tree, maxDistNode[0], dist2, maxDistNode);
+
+        // The maximum distance between two nodes is the diameter of the tree
+        int diameter = dist2[maxDistNode[0]];
+
+        // Calculate the result based on the diameter
+        int result = CalculateResult(diameter);
+
+        return result.ToString();
+    }
+
+    private void BFS(List<int>[] tree, int start, int[] dist, int[] maxDistNode)
+    {
+        Queue<int> queue = new Queue<int>();
+        bool[] visited = new bool[tree.Length];
+
+        queue.Enqueue(start);
+        visited[start] = true;
+        dist[start] = 0;
+
+        while (queue.Count > 0)
+        {
+            int current = queue.Dequeue();
+
+            foreach (var neighbor in tree[current])
             {
-                if (item < 0 || item > lengthOfB)
+                if (!visited[neighbor])
                 {
-                    return "Invalid value for K";
-                    break;
+                    visited[neighbor] = true;
+                    dist[neighbor] = dist[current] + 1;
+                    queue.Enqueue(neighbor);
+
+                    // Keep track of the farthest node and its distance
+                    if (dist[neighbor] > dist[maxDistNode[0]])
+                    {
+                        maxDistNode[0] = neighbor;
+                        maxDistNode[1] = dist[neighbor];
+                    }
                 }
-                if (A[item] == 0 && B[item] == 1)
-                    returnValue *= 3;
-                if (A[item] == 1 && B[item] == 1)
-                    returnValue *= 3;
-                if (A[item] == 1 && B[item] == 2)
-                    returnValue *= 3;
-                if (A[item] == 3 && B[item] == 4)
-                    returnValue *= 5;
-
-                response = returnValue.ToString();
             }
-
-            return response;
-
         }
     }
 
+    private int CalculateResult(int diameter)
+    {
+        // Calculate the result based on the diameter
+        if (diameter % 2 == 0)
+        {
+            return (diameter / 2 + 1) * (diameter / 2);
+        }
+        else
+        {
+            return (diameter / 2 + 1) * (diameter / 2) + (diameter / 2 + 1);
+        }
+    }
 }
 
+class Program
+{
+    static void Main()
+    {
+        // Sample data
+        int[] A = { 0, 1, 1, 3, 3, 6, 7 };
+        int[] B = { 1, 2, 3, 4, 5, 3, 5 };
 
+        // Create an instance of the Solution class
+        Solution solution = new Solution();
+
+        // Call the solution method with the sample data
+        string result = solution.solution(A, B);
+
+        // Print the result
+        Console.WriteLine(result);
+    }
+}
